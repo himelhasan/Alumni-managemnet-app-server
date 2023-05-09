@@ -3,14 +3,13 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 8000;
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const Mailchimp = require('mailchimp-api-v3');
-const request = require('request');
+
 
 
 
 
 require("dotenv").config();
-const mailchimpInstance = new Mailchimp(process.env.MAILCHIMP_API);
+
 
 // SSL COMMERCE
 // const store_id = env.process.STORE_ID;
@@ -102,29 +101,6 @@ async function run() {
     //   .collection("alumniEvents");
 
     // successFullStoryComments start
-
-
-
-    app.post('/subscribe', (req, res) => {
-      const { email } = req.body;
-      const LIST_ID = process.env.LIST_ID; // Replace with your Mailchimp list ID
-
-      const subscriber = {
-        email_address: email,
-        status: 'subscribed',
-      };
-
-      mailchimpInstance
-        .post(`/lists/${LIST_ID}/members`, subscriber)
-        .then(result => {
-          console.log('Successfully subscribed:', result);
-          res.status(200).json({ message: 'Subscription successful' });
-        })
-        .catch(error => {
-          console.error('Error subscribing:', error);
-          res.status(500).json({ error: 'Subscription failed' });
-        });
-    });
 
 
 
