@@ -162,6 +162,22 @@ async function run() {
       const result = await allCharityData.find(query).toArray();
       res.send(result);
     });
+
+       // email ways data get 
+       app.get("/myCharity/:email", async (req, res) => {
+        const  email  = req.params.email; 
+        const query = { email: email };
+        try {
+          const myCharity = await allCharityData.find(query).toArray();
+          res.status(200).send(myCharity);
+        } catch (error) {
+          console.error(error);
+          res.status(500).send("Internal Server Error");
+        }
+      });
+  
+
+
     app.delete("/charity/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -215,6 +231,28 @@ async function run() {
       const successStoryResult = await SuccessFullStory.find(query).toArray();
       res.send(successStoryResult);
     });
+
+
+    // email ways data get 
+    app.get("/mySucessStory/:email", async (req, res) => {
+      const  email  = req.params.email; 
+      const query = { email: email };
+      try {
+        const mySucessStory = await SuccessFullStory.find(query).toArray();
+        res.status(200).send(mySucessStory);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+      }
+    });
+
+
+
+
+
+
+
+
     app.get("/successFullStory/email/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
@@ -272,6 +310,24 @@ async function run() {
       const newsResult = await alumniNewsCollection.find(query).toArray();
       res.send(newsResult);
     });
+
+    
+       // email ways data get 
+       app.get("/mynews/:email", async (req, res) => {
+        const  email  = req.params.email; 
+        const query = { email: email };
+        try {
+          const mynews = await alumniNewsCollection.find(query).toArray();
+          res.status(200).send(mynews);
+        } catch (error) {
+          console.error(error);
+          res.status(500).send("Internal Server Error");
+        }
+      });
+
+
+
+
 
     // all news Category data
     app.get("/alumniNewsCategories", async (req, res) => {
@@ -413,13 +469,13 @@ async function run() {
 
 
 
-    // batch ways data get 
-    app.get("/events/:batch", async (req, res) => {
-      const  batch  = req.params.batch; // Get the batch value from the request URL
-      const query = { batch: batch };
+    // email ways data get 
+    app.get("/myEvents/:email", async (req, res) => {
+      const  email  = req.params.email; 
+      const query = { email: email };
       try {
-        const events = await AllEventsData.find(query).sort({ date: 1 }).toArray();
-        res.send(events);
+        const myEvents = await AllEventsData.find(query).toArray();
+        res.status(200).send(myEvents);
       } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
