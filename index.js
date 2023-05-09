@@ -1150,7 +1150,7 @@ async function run() {
     app.get("/single-comment", async (req, res) => {
       id = req.query.id;
       email = req.query.email;
-      console.log(id, email);
+      // console.log(id, email);
       const filter = { _id: new ObjectId(id), email: email };
       const result = await newsComments.findOne(filter);
       res.send(result);
