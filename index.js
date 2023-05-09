@@ -3,8 +3,14 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 8000;
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const { query } = require("express");
+const Mailchimp = require('mailchimp-api-v3');
+const request = require('request');
+
+
+
+
 require("dotenv").config();
+const mailchimpInstance = new Mailchimp(process.env.MAILCHIMP_API);
 
 // SSL COMMERCE
 // const store_id = env.process.STORE_ID;
@@ -97,6 +103,31 @@ async function run() {
 
     // successFullStoryComments start
 
+
+
+    app.post('/subscribe', (req, res) => {
+      const { email } = req.body;
+      const LIST_ID = process.env.LIST_ID; // Replace with your Mailchimp list ID
+
+      const subscriber = {
+        email_address: email,
+        status: 'subscribed',
+      };
+
+      mailchimpInstance
+        .post(`/lists/${LIST_ID}/members`, subscriber)
+        .then(result => {
+          console.log('Successfully subscribed:', result);
+          res.status(200).json({ message: 'Subscription successful' });
+        })
+        .catch(error => {
+          console.error('Error subscribing:', error);
+          res.status(500).json({ error: 'Subscription failed' });
+        });
+    });
+
+
+
     app.post("/successFullStoryComments", async (req, res) => {
       const successStoryComments = req.body;
       const cursor = await successFullStoryComments.insertOne(
@@ -138,6 +169,16 @@ async function run() {
       const result = await allCharityData.find(query).toArray();
       res.send(result);
     });
+
+    // batch ways charity get api data 
+    app.get("/charity/:batch", async (req, res) => {
+      const batch  = req.params.batch; // Typo: "req.prams" should be "req.params"
+      console.log(batch);
+      const query = { batchNumber: batch }; // Assuming "batch" is a field in your data model
+      const result = await allCharityData.find(query).toArray();
+      res.send(result);
+    });
+
 
     app.get("/charity/email/:email", async (req, res) => {
       const email = req.params.email;
@@ -393,6 +434,24 @@ async function run() {
       const gallery = await cursor.toArray();
       res.send(gallery);
     });
+
+
+
+    // batch ways data get 
+    app.get("/events/:batch", async (req, res) => {
+      const  batch  = req.params.batch; // Get the batch value from the request URL
+      const query = { batch: batch };
+      try {
+        const events = await AllEventsData.find(query).sort({ date: 1 }).toArray();
+        res.send(events);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+      }
+    });
+
+
+
 
     // all event Category data
     app.get("/eventCategories", async (req, res) => {
@@ -724,6 +783,18 @@ async function run() {
       const result = await alumniNewsCollection.deleteOne(filter);
       res.send(result);
     });
+
+
+
+
+
+
+
+
+
+
+
+
 
   } finally {
   }
