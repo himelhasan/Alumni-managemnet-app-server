@@ -906,10 +906,10 @@ async function run() {
     });
 
     //make batch admin
-    app.put("/alumni/BatchAdmin/:id", async (req, res) => {
+    app.put("/alumni/BatchAdmin/:id", verifyJWT, async (req, res) => {
       const decodedEmail = req.decoded.email;
       const query = { email: decodedEmail };
-      const user = await allAlumniData.find(query);
+      const user = await allAlumniData.findOne(query);
       if (user?.role !== "Admin" || user?.role == "Batch_Admin") {
         return res.status(403).send({ message: "forbidden access" });
       }
@@ -947,7 +947,15 @@ async function run() {
     });
 
     //remove admin
-    app.put("/alumni/admin/remove/:id", async (req, res) => {
+    app.put("/alumni/admin/remove/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      console.log({ decodedEmail });
+      const filter = { email: decodedEmail };
+      const user = await allAlumniData.findOne(filter);
+      if (user?.role !== "Admin") {
+        return res.status(403).send({ message: "forbidden access admin" });
+      }
+
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const option = { upsert: true };
