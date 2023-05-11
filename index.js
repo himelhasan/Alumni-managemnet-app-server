@@ -268,7 +268,22 @@ async function run() {
       const result = await successFullStoryComments.findOne(query);
       res.send(result);
     });
-    app.delete("/successFullStoryComment/:id", async (req, res) => {
+    app.delete("/successFullStoryComment/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const sort = { email: decodedEmail };
+      const user = await allAlumniData.findOne(sort);
+
+      const validate = { email: decodedEmail };
+      const emailToCheck = await successFullStoryComments.findOne(validate);
+
+      if (
+        emailToCheck?.email !== decodedEmail &&
+        user?.role !== "Admin" &&
+        user?.role !== "Batch_Admin"
+      ) {
+        return res.status(403).send({ message: "forbidden access admin" });
+      }
+
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await successFullStoryComments.deleteOne(query);
@@ -320,7 +335,22 @@ async function run() {
       }
     });
 
-    app.delete("/charity/:id", async (req, res) => {
+    app.delete("/charity/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const sort = { email: decodedEmail };
+      const user = await allAlumniData.findOne(sort);
+
+      const validate = { email: decodedEmail };
+      const emailToCheck = await allCharityData.findOne(validate);
+
+      if (
+        emailToCheck?.email !== decodedEmail &&
+        user?.role !== "Admin" &&
+        user?.role !== "Batch_Admin"
+      ) {
+        return res.status(403).send({ message: "forbidden access admin" });
+      }
+
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await allCharityData.deleteOne(query);
@@ -457,7 +487,22 @@ async function run() {
       res.send(result);
     });
     // delete successful story
-    app.delete("/successFullStory/:id", async (req, res) => {
+    app.delete("/successFullStory/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const sort = { email: decodedEmail };
+      const user = await allAlumniData.findOne(sort);
+
+      const validate = { email: decodedEmail };
+      const emailToCheck = await SuccessFullStory.findOne(validate);
+
+      if (
+        emailToCheck?.email !== decodedEmail &&
+        user?.role !== "Admin" &&
+        user?.role !== "Batch_Admin"
+      ) {
+        return res.status(403).send({ message: "forbidden access admin" });
+      }
+
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await SuccessFullStory.deleteOne(query);
@@ -600,7 +645,20 @@ async function run() {
       const result = await newsComments.find(query).toArray();
       res.send(result);
     });
-    app.delete("/newsComments/:id", async (req, res) => {
+    app.delete("/newsComments/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const sort = { email: decodedEmail };
+      const user = await allAlumniData.findOne(sort);
+      const validate = { email: decodedEmail };
+      const emailToCheck = await newsComments.findOne(validate);
+      if (
+        emailToCheck?.email !== decodedEmail &&
+        user?.role !== "Admin" &&
+        user?.role !== "Batch_Admin"
+      ) {
+        return res.status(403).send({ message: "forbidden access admin" });
+      }
+
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await newsComments.deleteOne(query);
@@ -897,7 +955,7 @@ async function run() {
           return;
         }
 
-        const isBatchAdmin = user.role === "Batch_Admin";
+        const isBatchAdmin = user?.role === "Batch_Admin";
         res.send({ isBatchAdmin });
       } catch (error) {
         console.error("Error retrieving user:", error);
@@ -949,7 +1007,6 @@ async function run() {
     //remove admin
     app.put("/alumni/admin/remove/:id", verifyJWT, async (req, res) => {
       const decodedEmail = req.decoded.email;
-      console.log({ decodedEmail });
       const filter = { email: decodedEmail };
       const user = await allAlumniData.findOne(filter);
       if (user?.role !== "Admin") {
@@ -1056,7 +1113,14 @@ async function run() {
     });
 
     // delete alumni information
-    app.delete("/alumni/:id", async (req, res) => {
+    app.delete("/alumni/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const filter = { email: decodedEmail };
+      const user = await allAlumniData.findOne(filter);
+      if (user?.role !== "Admin") {
+        return res.status(403).send({ message: "forbidden access admin" });
+      }
+
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await allAlumniData.deleteOne(query);
@@ -1153,7 +1217,20 @@ async function run() {
     });
 
     // Delete The event joining info
-    app.delete("/join-event/delete/:id", async (req, res) => {
+    app.delete("/join-event/delete/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const sort = { email: decodedEmail };
+      const user = await allAlumniData.findOne(sort);
+      const validate = { email: decodedEmail };
+      const emailToCheck = await allEventsFromData.findOne(validate);
+      if (
+        emailToCheck?.email !== decodedEmail &&
+        user?.role !== "Admin" &&
+        user?.role !== "Batch_Admin"
+      ) {
+        return res.status(403).send({ message: "forbidden access admin" });
+      }
+
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const result = await allEventsFromData.deleteOne(filter);
@@ -1192,7 +1269,20 @@ async function run() {
     });
 
     // Delete The news
-    app.delete("/news/delete/:id", async (req, res) => {
+    app.delete("/news/delete/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const sort = { email: decodedEmail };
+      const user = await allAlumniData.findOne(sort);
+      const validate = { email: decodedEmail };
+      const emailToCheck = await alumniNewsCollection.findOne(validate);
+      if (
+        emailToCheck?.email !== decodedEmail &&
+        user?.role !== "Admin" &&
+        user?.role !== "Batch_Admin"
+      ) {
+        return res.status(403).send({ message: "forbidden access admin" });
+      }
+
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const result = await alumniNewsCollection.deleteOne(filter);
@@ -1232,7 +1322,19 @@ async function run() {
     });
 
     // Delete The single event
-    app.delete("/event/delete/:id", async (req, res) => {
+    app.delete("/event/delete/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const query = { email: decodedEmail };
+      const user = await allAlumniData.findOne(query);
+      const sort = { authorEmail: decodedEmail };
+      const eventUser = await AllEventsData.findOne(sort);
+      if (
+        eventUser?.authorEmail !== decodedEmail &&
+        user?.role !== "Admin" &&
+        user?.role !== "Batch_Admin"
+      ) {
+        return res.status(403).send({ message: "forbidden access admin" });
+      }
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const result = await AllEventsData.deleteOne(filter);
