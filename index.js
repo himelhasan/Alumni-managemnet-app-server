@@ -26,7 +26,6 @@ const client = new MongoClient(uri, {
 
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
-  console.log({ authHeader });
   if (!authHeader) {
     return res.status(401).send("unauthorized access");
   }
@@ -118,7 +117,6 @@ async function run() {
 
     app.post("/charityDonation", (req, res) => {
       const charityDonationInfo = req.body;
-      console.log(charityDonationInfo);
       const {
         cus_name,
         cus_country,
@@ -184,7 +182,6 @@ async function run() {
       sslcz.init(data).then((apiResponse) => {
         // Redirect the user to payment gateway
         let GatewayPageURL = apiResponse.GatewayPageURL;
-        console.log(apiResponse);
         charityDonationData.insertOne({
           ...charityDonationInfo,
           transactionId,
@@ -194,9 +191,8 @@ async function run() {
       });
     });
     app.post("/payment/success", async (req, res) => {
-      console.log("success");
       const { transactionId } = req.query;
-      console.log(transactionId);
+
       if (!transactionId) {
         res.redirect("https://alumni-management-42856.web.app/payment/fail");
       }
@@ -429,7 +425,7 @@ async function run() {
     // successFull Story start
     app.post("/successFullStory", async (req, res) => {
       const successFullStory = req.body;
-      console.log(successFullStory);
+
       const cursor = await SuccessFullStory.insertOne(successFullStory);
       res.send(cursor);
     });
@@ -511,9 +507,9 @@ async function run() {
     // get successful story batch wise
     app.get("/successFullStory/batch/:batchNumber", async (req, res) => {
       const batchNumber = req.params.batchNumber;
-      console.log(batchNumber);
+
       const query = { batchNumber: batchNumber };
-      console.log(query);
+
       const cursor = await SuccessFullStory.find(query).toArray();
       res.send(cursor);
     });
@@ -551,7 +547,7 @@ async function run() {
     // all news data
     app.get("/news", async (req, res) => {
       const query = {};
-      console.log("token", req.headers.authorization);
+
       const newsResult = await alumniNewsCollection.find(query).toArray();
       res.send(newsResult);
     });
@@ -693,7 +689,7 @@ async function run() {
     });
     app.post("/gallery", async (req, res) => {
       const gallery = req.body;
-      console.log(gallery);
+
       const cursor = await AllGalleryPhotos.insertOne(gallery);
       res.send(cursor);
     });
@@ -986,7 +982,7 @@ async function run() {
     //make super admin
     app.put("/alumni/admin/:id", verifyJWT, async (req, res) => {
       const decodedEmail = req.decoded.email;
-      console.log({ decodedEmail });
+
       const query = { email: decodedEmail };
       const user = await allAlumniData.findOne(query);
       if (user?.role !== "Admin") {
@@ -1108,8 +1104,6 @@ async function run() {
       // console.log("----updated data -----", updatedUserData);
       const result = await allAlumniData.updateOne(filter, updateData, options);
       res.send(result);
-      // console.log("---- data -----", data);
-      console.log("---- updateData -----", updateData);
     });
 
     // delete alumni information
@@ -1345,7 +1339,6 @@ async function run() {
     app.get("/single-comment", async (req, res) => {
       id = req.query.id;
       email = req.query.email;
-      console.log(id, email);
       const filter = { _id: new ObjectId(id), email: email };
       const result = await newsComments.findOne(filter);
       res.send(result);
@@ -1355,7 +1348,6 @@ async function run() {
     app.put("/update-comment/:id", async (req, res) => {
       const id = req.params.id;
       const updatedData = req.body;
-      // console.log(updatedData)
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const updatedDoc = {
@@ -1373,7 +1365,6 @@ async function run() {
     app.get("/single-successful-comment", async (req, res) => {
       id = req.query.id;
       email = req.query.email;
-      // console.log(id, email)
       const filter = { _id: new ObjectId(id), email: email };
       const result = await successFullStoryComments.findOne(filter);
       res.send(result);
@@ -1383,7 +1374,6 @@ async function run() {
     app.put("/update-successful-comment/:id", async (req, res) => {
       const id = req.params.id;
       const updatedData = req.body;
-      // console.log(updatedData)
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const updatedDoc = {
@@ -1416,17 +1406,6 @@ async function run() {
       }
       res.status(403).send({ accessToken: "" });
     });
-
-    // ////////////////////////////////////////////////////////////////////////////////////
-    // ////////////////////////////////////////////////////////////////////////////////////
-    // const decodedEmail = req.decoded.email;
-
-    // if (email !== decodedEmail) {
-    //   return res.status(403).send({ message: "forbidden access" });
-    // }
-
-    // ////////////////////////////////////////////////////////////////////////////////////
-    // //////////////////////////   D A S H B O A R D       ////////////////////////////////
   } finally {
   }
 }
