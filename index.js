@@ -641,12 +641,15 @@ async function run() {
       const result = await newsComments.find(query).toArray();
       res.send(result);
     });
-    app.delete("/newsComments/:id", verifyJWT, async (req, res) => {
+    // news comments to delete
+    app.delete("/newsComments/delete/:id", verifyJWT, async (req, res) => {
       const decodedEmail = req.decoded.email;
       const sort = { email: decodedEmail };
       const user = await allAlumniData.findOne(sort);
+      console.log(user);
       const validate = { email: decodedEmail };
       const emailToCheck = await newsComments.findOne(validate);
+      console.log(emailToCheck);
       if (
         emailToCheck?.email !== decodedEmail &&
         user?.role !== "Admin" &&
@@ -654,7 +657,6 @@ async function run() {
       ) {
         return res.status(403).send({ message: "forbidden access admin" });
       }
-
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await newsComments.deleteOne(query);
@@ -1339,6 +1341,8 @@ async function run() {
     app.get("/single-comment", async (req, res) => {
       id = req.query.id;
       email = req.query.email;
+      console.log(id);
+      console.log(email);
       const filter = { _id: new ObjectId(id), email: email };
       const result = await newsComments.findOne(filter);
       res.send(result);
